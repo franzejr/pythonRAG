@@ -1,0 +1,110 @@
+site_name: PythonRAG Documentation
+site_description: A modern Python package for Retrieval-Augmented Generation (RAG) workflows
+site_author: PythonRAG Contributors
+site_url: https://pythonrag.readthedocs.io/
+
+repo_name: PythonRAG
+repo_url: https://github.com/franzejr/PythonRAG
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_signature_annotations: true
+            merge_init_into_class: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Basic Usage: getting-started/basic-usage.md
+  - User Guide:
+    - Configuration: user-guide/configuration.md
+    - OpenAI Integration: user-guide/openai-integration.md
+    - Vector Databases: user-guide/vector-databases.md
+    - Document Processing: user-guide/document-processing.md
+    - Retrieval Strategies: user-guide/retrieval-strategies.md
+  - Examples:
+    - Basic Example: examples/basic.md
+    - OpenAI Example: examples/openai.md
+    - Qdrant Integration: examples/qdrant.md
+    - Advanced Configurations: examples/advanced.md
+    - Jupyter Notebooks: examples/notebooks.md
+  - API Reference:
+    - Core Classes: api/core.md
+    - Exceptions: api/exceptions.md
+    - CLI: api/cli.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Testing: development/testing.md
+    - Release Process: development/release.md
+  - FAQ: faq.md
+  - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+              link: https://github.com/franzejr/PythonRAG
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/pythonrag/
+  version:
+    provider: mike
+
+extra_css:
+  - stylesheets/extra.css 
