@@ -136,19 +136,14 @@ jobs:
       run: |
         python -m py_compile examples/*.py
 
-    - name: Check imports in examples
+        - name: Check imports in examples
       run: |
         for file in examples/*.py; do
           echo "Checking imports in $file"
-          python -c "
-          import ast
-          import sys
-          with open('$file', 'r') as f:
-              try:
-                  ast.parse(f.read())
-                  print('✅ Syntax valid')
-              except SyntaxError as e:
-                  print(f'❌ Syntax error: {e}')
-                  sys.exit(1)
-          "
+          if python -c "import ast; ast.parse(open('$file').read())"; then
+            echo "✅ Syntax valid"
+          else
+            echo "❌ Syntax error in $file"
+            exit 1
+          fi
         done 
