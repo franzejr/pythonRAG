@@ -10,9 +10,13 @@
 
 <!-- Force workflow refresh -->
 
-[🚀 Quick Start](getting-started/quickstart.md){ .md-button .md-button--primary }
-[📖 Examples](examples/openai.md){ .md-button }
-[🔧 API Reference](api/core.md){ .md-button }
+</div>
+
+<div align="center" style="margin: 2rem 0;">
+
+<a href="getting-started/quickstart/" class="md-button md-button--primary">🚀 Quick Start</a>
+<a href="examples/openai/" class="md-button">📖 Examples</a>  
+<a href="api/core/" class="md-button">🔧 API Reference</a>
 
 </div>
 
@@ -155,6 +159,6 @@ PythonRAG is released under the [MIT License](https://github.com/franzejr/Python
 
 **Ready to build amazing RAG applications?**
 
-[Get Started Now](getting-started/installation.md){ .md-button .md-button--primary }
+[Get Started Now](getting-started/installation.md)
 
 </div> 
