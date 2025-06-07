@@ -136,7 +136,7 @@ jobs:
       run: |
         python -m py_compile examples/*.py
 
-        - name: Check imports in examples
+    - name: Check imports in examples
       run: |
         for file in examples/*.py; do
           echo "Checking imports in $file"
@@ -146,4 +146,4 @@ jobs:
             echo "❌ Syntax error in $file"
             exit 1
           fi
-        done 
+        done
