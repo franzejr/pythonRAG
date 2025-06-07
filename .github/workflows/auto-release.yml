@@ -129,36 +129,15 @@ jobs:
         GH_TOKEN: ${{ github.token }}
 
     - name: Create development release
-      uses: actions/create-release@v1
-      id: create_release
+      run: |
+        gh release create "dev-${{ steps.version.outputs.dev_version }}" \
+          --title "🔄 Development Release ${{ steps.version.outputs.dev_version }}" \
+          --notes-file release_notes.md \
+          --prerelease \
+          dist/pythonrag-${{ steps.version.outputs.dev_version }}-py3-none-any.whl \
+          dist/pythonrag-${{ steps.version.outputs.dev_version }}.tar.gz
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: dev-${{ steps.version.outputs.dev_version }}
-        release_name: "🔄 Development Release ${{ steps.version.outputs.dev_version }}"
-        body_path: release_notes.md
-        draft: false
-        prerelease: true
-
-    - name: Upload wheel to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/pythonrag-${{ steps.version.outputs.dev_version }}-py3-none-any.whl
-        asset_name: pythonrag-${{ steps.version.outputs.dev_version }}-py3-none-any.whl
-        asset_content_type: application/octet-stream
-
-    - name: Upload source distribution to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/pythonrag-${{ steps.version.outputs.dev_version }}.tar.gz
-        asset_name: pythonrag-${{ steps.version.outputs.dev_version }}.tar.gz
-        asset_content_type: application/gzip
+        GH_TOKEN: ${{ github.token }}
 
     - name: Create latest development tag
       run: |
@@ -168,23 +147,24 @@ jobs:
 
     - name: Create latest development release
       continue-on-error: true
-      uses: actions/create-release@v1
+      run: |
+        cat > dev_latest_notes.md << EOF
+        ## 🚀 Latest Development Release
+        
+        This release always contains the latest development version from the main branch.
+        
+        **Current Version:** ${{ steps.version.outputs.dev_version }}
+        **Commit:** ${{ github.sha }}
+        
+        For the specific release notes, see: [dev-${{ steps.version.outputs.dev_version }}](https://github.com/${{ github.repository }}/releases/tag/dev-${{ steps.version.outputs.dev_version }})
+        EOF
+        
+        gh release create "dev-latest" \
+          --title "🚀 Latest Development Release" \
+          --notes-file dev_latest_notes.md \
+          --prerelease
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: dev-latest
-        release_name: "🚀 Latest Development Release"
-        body: |
-          ## 🚀 Latest Development Release
-          
-          This release always contains the latest development version from the main branch.
-          
-          **Current Version:** ${{ steps.version.outputs.dev_version }}
-          **Commit:** ${{ github.sha }}
-          
-          For the specific release notes, see: [dev-${{ steps.version.outputs.dev_version }}](https://github.com/${{ github.repository }}/releases/tag/dev-${{ steps.version.outputs.dev_version }})
-        draft: false
-        prerelease: true
+        GH_TOKEN: ${{ github.token }}
 
     - name: Comment on commit
       uses: actions/github-script@v6
