@@ -114,25 +114,36 @@ jobs:
       - name: Validate markdown syntax
         run: |
           # Check that all markdown files are properly formatted
-          find docs -name "*.md" | while read file; do
-            echo "Validating $file"
-            python -c "
-            import sys
-            try:
-                with open('$file', 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    # Basic validation - check for common issues
-                    if '```' in content:
-                        code_blocks = content.count('```')
-                        if code_blocks % 2 != 0:
-                            print(f'❌ Unclosed code block in $file')
-                            sys.exit(1)
-                    print(f'✅ $file syntax valid')
-            except Exception as e:
-                print(f'❌ Error reading $file: {e}')
-                sys.exit(1)
-            "
-          done
+          python -c "
+          import os
+          import sys
+          
+          docs_dir = 'docs'
+          error_found = False
+          
+          for root, dirs, files in os.walk(docs_dir):
+              for file in files:
+                  if file.endswith('.md'):
+                      filepath = os.path.join(root, file)
+                      print(f'Validating {filepath}')
+                      try:
+                          with open(filepath, 'r', encoding='utf-8') as f:
+                              content = f.read()
+                              # Basic validation - check for common issues
+                              if '```' in content:
+                                  code_blocks = content.count('```')
+                                  if code_blocks % 2 != 0:
+                                      print(f'❌ Unclosed code block in {filepath}')
+                                      error_found = True
+                                      continue
+                              print(f'✅ {filepath} syntax valid')
+                      except Exception as e:
+                          print(f'❌ Error reading {filepath}: {e}')
+                          error_found = True
+          
+          if error_found:
+              sys.exit(1)
+          "
 
       - name: Check documentation completeness
         run: |
