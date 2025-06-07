@@ -1,6 +1,15 @@
 # PythonRAG
 
-A modern Python package for Retrieval-Augmented Generation (RAG) workflows.
+[![CI](https://github.com/franzejr/pythonRAG/actions/workflows/ci.yml/badge.svg)](https://github.com/franzejr/pythonRAG/actions/workflows/ci.yml)
+[![Documentation](https://github.com/franzejr/pythonRAG/actions/workflows/docs.yml/badge.svg)](https://github.com/franzejr/pythonRAG/actions/workflows/docs.yml)
+[![Latest Development Release](https://img.shields.io/github/v/release/franzejr/pythonRAG?include_prereleases&label=dev%20release&color=orange)](https://github.com/franzejr/pythonRAG/releases/tag/dev-latest)
+[![PyPI version](https://badge.fury.io/py/pythonrag.svg)](https://badge.fury.io/py/pythonrag)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> **🚀 Modern Python package for Retrieval-Augmented Generation (RAG) workflows**
+
+PythonRAG provides a simple, extensible framework for building RAG applications with support for multiple embedding models, language models, and vector databases. Designed with modern Python packaging standards and comprehensive testing.
 
 ## Overview
 
