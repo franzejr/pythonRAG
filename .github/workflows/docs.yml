@@ -113,37 +113,23 @@ jobs:
 
       - name: Validate markdown syntax
         run: |
-          # Check that all markdown files are properly formatted
-          python -c "
-          import os
-          import sys
-          
-          docs_dir = 'docs'
-          error_found = False
-          
-          for root, dirs, files in os.walk(docs_dir):
-              for file in files:
-                  if file.endswith('.md'):
-                      filepath = os.path.join(root, file)
-                      print(f'Validating {filepath}')
-                      try:
-                          with open(filepath, 'r', encoding='utf-8') as f:
-                              content = f.read()
-                              # Basic validation - check for common issues
-                              if '```' in content:
-                                  code_blocks = content.count('```')
-                                  if code_blocks % 2 != 0:
-                                      print(f'❌ Unclosed code block in {filepath}')
-                                      error_found = True
-                                      continue
-                              print(f'✅ {filepath} syntax valid')
-                      except Exception as e:
-                          print(f'❌ Error reading {filepath}: {e}')
-                          error_found = True
-          
-          if error_found:
-              sys.exit(1)
-          "
+          echo "Checking markdown files for basic syntax issues..."
+          # Simple validation using shell tools
+          find docs -name "*.md" | while read file; do
+            echo "Validating $file"
+            # Check if file exists and is readable
+            if [ ! -r "$file" ]; then
+              echo "❌ Cannot read $file"
+              exit 1
+            fi
+            # Count code blocks to ensure they're closed
+            triple_backticks=$(grep -c '```' "$file" || echo 0)
+            if [ $((triple_backticks % 2)) -ne 0 ]; then
+              echo "❌ Unclosed code block in $file"
+              exit 1
+            fi
+            echo "✅ $file syntax valid"
+          done
 
       - name: Check documentation completeness
         run: |
