@@ -298,18 +298,17 @@ export PINECONE_API_KEY="your-pinecone-key"
 Now that you have PythonRAG running, explore these areas:
 
 ### Learn the Basics
-- **[Basic Usage](basic-usage.md)** - Core concepts and patterns
-- **[Configuration Guide](../user-guide/configuration.md)** - Detailed configuration options
+- **[OpenAI Integration](../examples/openai.md)** - Working with OpenAI models
+- **[Qdrant Integration](../examples/qdrant.md)** - Using vector databases
 
 ### See Examples
-- **[Basic Examples](../examples/basic.md)** - Simple use cases
 - **[OpenAI Integration](../examples/openai.md)** - Using OpenAI models
-- **[Jupyter Notebooks](../examples/notebooks.md)** - Interactive examples
+- **[Qdrant Integration](../examples/qdrant.md)** - Vector database examples
 
 ### Advanced Topics
-- **[Vector Databases](../user-guide/vector-databases.md)** - Choosing the right vector DB
-- **[Document Processing](../user-guide/document-processing.md)** - Handling different document types
-- **[Retrieval Strategies](../user-guide/retrieval-strategies.md)** - Optimizing retrieval
+- **[API Reference](../api/core.md)** - Complete API documentation
+- **[FAQ](../faq.md)** - Common questions and troubleshooting
+- **[Changelog](../changelog.md)** - What's new in each version
 
 ## 🆘 Getting Help
 
@@ -349,4 +348,4 @@ pip install "pythonrag[embeddings]"
 
 ---
 
-**Ready to dive deeper?** Continue to [Basic Usage](basic-usage.md) to learn core concepts! 
+**Ready to dive deeper?** Check out our [OpenAI Integration guide](../examples/openai.md) to learn more! 

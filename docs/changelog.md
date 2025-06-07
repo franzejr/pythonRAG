@@ -115,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Patch version** (0.1.1): Bug fixes, backward compatible
 
 ### Contributing
-See [Contributing Guide](development/contributing.md) for information on:
+For questions and support, see our [FAQ](faq.md) for information on:
 - Setting up development environment
 - Running tests
 - Code style and formatting

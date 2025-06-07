@@ -310,9 +310,9 @@ If you encounter issues:
 Now that PythonRAG is installed:
 
 1. **[Quick Start Guide](quickstart.md)** - Build your first RAG pipeline
-2. **[Basic Usage](basic-usage.md)** - Learn core concepts
-3. **[Configuration](../user-guide/configuration.md)** - Customize for your needs
-4. **[Examples](../examples/basic.md)** - See PythonRAG in action
+2. **[OpenAI Integration](../examples/openai.md)** - Working with OpenAI models
+3. **[Qdrant Integration](../examples/qdrant.md)** - Using vector databases
+4. **[FAQ](../faq.md)** - Common questions and troubleshooting
 
 ## Optional Dependencies
 

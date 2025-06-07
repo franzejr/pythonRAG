@@ -9,7 +9,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 [🚀 Quick Start](getting-started/quickstart.md){ .md-button .md-button--primary }
-[📖 User Guide](user-guide/configuration.md){ .md-button }
+[📖 Examples](examples/openai.md){ .md-button }
 [🔧 API Reference](api/core.md){ .md-button }
 
 </div>
@@ -97,8 +97,8 @@ print(response)
 
 1. **[Installation](getting-started/installation.md)** - Install PythonRAG and dependencies
 2. **[Quick Start](getting-started/quickstart.md)** - Your first RAG pipeline in 5 minutes
-3. **[Basic Usage](getting-started/basic-usage.md)** - Core concepts and patterns
-4. **[Configuration](user-guide/configuration.md)** - Customize for your needs
+3. **[OpenAI Integration](examples/openai.md)** - Working with OpenAI models
+4. **[Vector Databases](examples/qdrant.md)** - Using Qdrant for vector storage
 
 ## 💡 Why PythonRAG?
 

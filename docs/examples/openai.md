@@ -411,7 +411,6 @@ estimate_cost(
 
 ## Next Steps
 
-- **[Vector Databases](../user-guide/vector-databases.md)** - Choose the right storage
-- **[Configuration](../user-guide/configuration.md)** - Detailed configuration options
-- **[Advanced Examples](advanced.md)** - Complex use cases
-- **[Performance Tuning](../user-guide/performance.md)** - Optimize for production 
+- **[Qdrant Integration](qdrant.md)** - Vector database examples
+- **[API Reference](../api/core.md)** - Complete API documentation
+- **[FAQ](../faq.md)** - Common questions and troubleshooting 
