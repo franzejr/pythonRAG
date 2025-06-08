@@ -37,11 +37,11 @@ PythonRAG is a comprehensive toolkit that simplifies the implementation of RAG s
 ## 🎯 Quick Example
 
 ```python
-from pythonrag import RAGPipeline
+from pythonrag.pipelines import QdrantPipeline
 
-# Initialize a RAG pipeline
-rag = RAGPipeline(
-    embedding_model="sentence-transformers/all-MiniLM-L6-v2",
+# Initialize a RAG pipeline with Qdrant
+rag = QdrantPipeline(
+    embedding_model="all-MiniLM-L6-v2",
     llm_model="gpt-4o-mini"
 )
 
@@ -103,8 +103,8 @@ print(response)
 
 1. **[Installation](getting-started/installation.md)** - Install PythonRAG and dependencies
 2. **[Quick Start](getting-started/quickstart.md)** - Your first RAG pipeline in 5 minutes
-3. **[OpenAI Integration](examples/openai.md)** - Working with OpenAI models
-4. **[Vector Databases](examples/qdrant.md)** - Using Qdrant for vector storage
+3. **[Qdrant Integration](examples/qdrant.md)** - Complete RAG system with Qdrant
+4. **[OpenAI Integration](examples/openai.md)** - Working with OpenAI models
 
 ## 💡 Why PythonRAG?
 
@@ -162,3 +162,4 @@ PythonRAG is released under the [MIT License](https://github.com/franzejr/Python
 [Get Started Now](getting-started/installation.md)
 
 </div> 
+ 

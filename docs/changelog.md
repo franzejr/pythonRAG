@@ -124,3 +124,4 @@ For questions and support, see our [FAQ](faq.md) for information on:
 ---
 
 **Note**: This project is under active development. Features marked as "Added" in unreleased versions are planned but not yet implemented. Check the [GitHub repository](https://github.com/franzejr/PythonRAG) for the latest development status. 
+ 

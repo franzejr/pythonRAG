@@ -12,9 +12,20 @@ __email__ = "franzejr@gmail.com"
 from .core import RAGPipeline
 from .exceptions import ConfigurationError, EmbeddingError, PythonRAGError
 
+try:
+    from .pipelines import QdrantPipeline
+
+    _PIPELINES_AVAILABLE = True
+except ImportError:
+    _PIPELINES_AVAILABLE = False
+    QdrantPipeline = None
+
 __all__ = [
     "RAGPipeline",
     "PythonRAGError",
     "ConfigurationError",
     "EmbeddingError",
 ]
+
+if _PIPELINES_AVAILABLE:
+    __all__.append("QdrantPipeline")

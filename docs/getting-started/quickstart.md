@@ -349,3 +349,4 @@ pip install "pythonrag[embeddings]"
 ---
 
 **Ready to dive deeper?** Check out our [OpenAI Integration guide](../examples/openai.md) to learn more! 
+ 

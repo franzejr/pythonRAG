@@ -414,3 +414,4 @@ estimate_cost(
 - **[Qdrant Integration](qdrant.md)** - Vector database examples
 - **[API Reference](../api/core.md)** - Complete API documentation
 - **[FAQ](../faq.md)** - Common questions and troubleshooting 
+ 

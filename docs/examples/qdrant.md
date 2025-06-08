@@ -1,32 +1,29 @@
-# Qdrant Integration Examples
+# Qdrant Integration
 
-This page demonstrates how to extend the PythonRAG pipeline with Qdrant vector database integration. Our examples show how to build upon the base `RAGPipeline` class to create fully functional RAG systems with Qdrant as the vector store backend.
+This page demonstrates how to use the `QdrantPipeline` implementation for building RAG systems with Qdrant as the vector database backend.
 
-## Architecture: Extending RAGPipeline
-
-Our Qdrant integration demonstrates how to extend the base `RAGPipeline` class with custom implementations:
+## Quick Start
 
 ```python
-from pythonrag import RAGPipeline
+from pythonrag.pipelines import QdrantPipeline
 
-class QdrantRAGPipeline(RAGPipeline):
-    """Extended RAG Pipeline with Qdrant implementation."""
-    
-    def add_documents(self, documents, metadata=None):
-        # Custom implementation with Qdrant storage
-        pass
-    
-    def query(self, question, top_k=None):
-        # Custom implementation with Qdrant search
-        pass
+# Initialize with Qdrant
+rag = QdrantPipeline(
+    embedding_model="all-MiniLM-L6-v2",
+    llm_model="gpt-4o-mini",
+    collection_name="my_documents"
+)
+
+# Add documents
+rag.add_documents([
+    "Your document content here...",
+    "More documents..."
+])
+
+# Query
+response = rag.query("What is this about?")
+print(response)
 ```
-
-This approach provides:
-
-- **Framework compliance**: Uses the standard RAG interface
-- **Custom backends**: Full control over vector database operations  
-- **Extensibility**: Easy to add features like filtering, hybrid search
-- **Testing**: Consistent interface for unit and integration tests
 
 ## What is Qdrant?
 
@@ -43,7 +40,7 @@ Qdrant is an open-source vector database written in Rust, designed for high-perf
 ### 1. Install Dependencies
 
 ```bash
-pip install "pythonrag[vectordb]" qdrant-client
+pip install qdrant-client openai sentence-transformers
 ```
 
 ### 2. Set Up Qdrant
@@ -70,457 +67,367 @@ pip install "pythonrag[vectordb]" qdrant-client
 ### 3. API Keys
 
 ```bash
-export OPENAI_API_KEY="your-openai-key"  # For embeddings and LLM
+export OPENAI_API_KEY="your-openai-key"  # For LLM responses
 export QDRANT_API_KEY="your-qdrant-key"  # Optional for cloud
 ```
 
-## Pipeline Extension Example
+## Basic Usage
 
-### Complete Implementation
-
-Our Qdrant pipeline example (`examples/qdrant_pipeline_example.py`) shows how to extend the base RAGPipeline:
+### Simple Example
 
 ```python
-python examples/qdrant_pipeline_example.py
-```
+from pythonrag.pipelines import QdrantPipeline
 
-**Features:**
-- ✅ Document chunking and indexing
-- ✅ OpenAI embeddings (text-embedding-3-small)
-- ✅ Qdrant vector storage
-- ✅ Interactive Q&A interface
-- ✅ Source attribution
-- ✅ Cost optimization
-- ✅ Error handling
-
-### Sample Session
-
-```
-🚀 PythonRAG Interactive Demo with Qdrant
-==================================================
-✅ OpenAI client initialized
-✅ Connected to local Qdrant
-✅ Created new collection: pythonrag_interactive_demo
-✅ Interactive Qdrant RAG system initialized!
-
-📚 Processing 4 documents...
-   Created 12 chunks
-   Generating embeddings...
-   Progress: 10/12 embeddings generated
-   Uploading to Qdrant...
-✅ Successfully indexed 12 chunks
-
-📊 Collection Stats:
-   collection_name: pythonrag_interactive_demo
-   points_count: 12
-   vector_size: 1536
-   distance_metric: Cosine
-
-==================================================
-🎯 Ready to answer questions about AI, LLMs, RAG, and Vector Databases!
-   Type 'help' for available commands
-   Type 'exit' to quit
-==================================================
-
-❓ Your question: What is the difference between AI and Machine Learning?
-
-🔍 Searching for: 'What is the difference between AI and Machine Learning?'
-   Found 3 relevant chunks
-   🤖 Generating answer...
-   ✅ Answer generated
-
-💡 Answer:
-----------------------------------------
-Based on the provided context, here's the key difference between AI and Machine Learning:
-
-**Artificial Intelligence (AI)** is the broader field of computer science focused on building smart machines capable of performing tasks that typically require human intelligence. These tasks include learning, reasoning, problem-solving, perception, and language understanding.
-
-**Machine Learning (ML)** is a subset of AI that specifically enables computers to learn and improve from experience without being explicitly programmed. It uses algorithms and statistical models to analyze and draw inferences from patterns in data.
-
-In simpler terms:
-- **AI** is the overall goal of creating intelligent machines
-- **Machine Learning** is one of the methods used to achieve AI
-
-The relationship is hierarchical - all machine learning is part of AI, but not all AI uses machine learning. AI can also include other approaches like rule-based systems, expert systems, and symbolic reasoning.
-
-📚 Sources (from 1 documents):
-----------------------------------------
-1. [AI_Overview.md] (similarity: 0.857)
-   Artificial Intelligence (AI) is a broad field of computer science focused on building smart machines capable of performing tasks that...
-
-2. [AI_Overview.md] (similarity: 0.834)
-   Machine Learning is a subset of AI that enables computers to learn and improve from experience without being explicitly programmed...
-
-3. [AI_Overview.md] (similarity: 0.798)
-   General AI, also called Strong AI or Artificial General Intelligence (AGI), would have the ability to understand, learn, and apply...
-```
-
-## Configuration Examples
-
-### Basic Qdrant Setup
-
-```python
-from pythonrag import RAGPipeline
-
-# Local Qdrant
-rag = RAGPipeline(
-    embedding_model="text-embedding-3-small",
+# Initialize pipeline
+rag = QdrantPipeline(
+    embedding_model="all-MiniLM-L6-v2",
     llm_model="gpt-4o-mini",
-    vector_db={
-        "type": "qdrant",
-        "url": "http://localhost:6333",
-        "collection_name": "my_documents"
-    }
+    collection_name="demo_docs"
 )
-```
 
-### Cloud Qdrant Setup
+# Add some documents
+documents = [
+    "Python is a programming language known for its simplicity.",
+    "Machine learning is a subset of artificial intelligence.",
+    "RAG combines retrieval and generation for better AI responses."
+]
 
-```python
-import os
+rag.add_documents(documents)
 
-rag = RAGPipeline(
-    embedding_model="text-embedding-3-small",
-    llm_model="gpt-4o-mini",
-    vector_db={
-        "type": "qdrant",
-        "url": os.getenv("QDRANT_URL"),
-        "api_key": os.getenv("QDRANT_API_KEY"),
-        "collection_name": "production_docs"
-    }
-)
+# Query the system
+question = "What is Python?"
+answer = rag.query(question)
+print(f"Q: {question}")
+print(f"A: {answer}")
 ```
 
 ### Advanced Configuration
 
 ```python
-rag = RAGPipeline(
-    embedding_model="text-embedding-3-small",
+from pythonrag.pipelines import QdrantPipeline
+import os
+
+rag = QdrantPipeline(
+    # Model configuration
+    embedding_model="all-MiniLM-L6-v2",
     llm_model="gpt-4o-mini",
-    vector_db={
-        "type": "qdrant",
-        "url": "http://localhost:6333",
-        "collection_name": "advanced_collection",
-        "distance_metric": "cosine",  # cosine, euclidean, dot_product
-        "vector_size": 1536,  # Must match embedding model
-        "create_collection": True,  # Auto-create if missing
-        "timeout": 30,  # Connection timeout
-        "prefer_grpc": False  # Use REST API
-    },
-    chunk_size=1000,
-    chunk_overlap=200,
+    
+    # Qdrant configuration
+    qdrant_url=os.getenv("QDRANT_URL", "http://localhost:6333"),
+    qdrant_api_key=os.getenv("QDRANT_API_KEY"),
+    collection_name="advanced_rag",
+    vector_size=384,  # Must match embedding model
+    
+    # Chunking configuration
+    chunk_size=800,
+    chunk_overlap=100,
+    
+    # Retrieval configuration
     top_k=5
 )
 ```
 
-## Performance Optimization
+## Working with Documents
 
-### 1. Vector Configuration
+### Adding Text Documents
 
 ```python
-# Optimize for your embedding model
-vector_configs = {
-    "text-embedding-3-small": {"size": 1536, "distance": "cosine"},
-    "text-embedding-3-large": {"size": 3072, "distance": "cosine"},
-    "all-MiniLM-L6-v2": {"size": 384, "distance": "cosine"},
-    "all-mpnet-base-v2": {"size": 768, "distance": "cosine"}
-}
+# Simple text documents
+documents = [
+    "First document content...",
+    "Second document content..."
+]
+rag.add_documents(documents)
+
+# Documents with metadata
+docs_with_metadata = [
+    {
+        "content": "Document about Python programming",
+        "metadata": {"category": "programming", "language": "python"}
+    },
+    {
+        "content": "Document about machine learning",
+        "metadata": {"category": "AI", "difficulty": "intermediate"}
+    }
+]
+rag.add_documents(docs_with_metadata)
 ```
 
-### 2. Batch Operations
+### Adding Files
 
 ```python
-# Process documents in batches for better performance
-documents = ["doc1", "doc2", ...]  # Large list
-
-# Batch size optimization
-batch_size = 100
-for i in range(0, len(documents), batch_size):
-    batch = documents[i:i + batch_size]
-    rag.add_documents(batch)
-```
-
-### 3. Collection Management
-
-```python
-# Pre-create optimized collection
-from qdrant_client import QdrantClient, models
-
-client = QdrantClient("http://localhost:6333")
-
-client.create_collection(
-    collection_name="optimized_collection",
-    vectors_config=models.VectorParams(
-        size=1536,
-        distance=models.Distance.COSINE,
-        # Performance optimizations
-        hnsw_config=models.HnswConfigDiff(
-            m=16,  # Number of connections
-            ef_construct=100,  # Search quality during construction
-            full_scan_threshold=10000  # When to use brute force
-        )
-    )
+# Add document from file
+rag.add_document_file(
+    "path/to/document.txt",
+    metadata={"source": "document.txt", "type": "technical"}
 )
 ```
 
-## Real-World Use Cases
+## Configuration Options
 
-### 1. Document Q&A System
+### Qdrant Connection
 
 ```python
-class DocumentQASystem:
-    def __init__(self):
-        self.rag = RAGPipeline(
-            embedding_model="text-embedding-3-small",
+# Local Qdrant
+rag = QdrantPipeline(
+    qdrant_url="http://localhost:6333"
+)
+
+# Cloud Qdrant
+rag = QdrantPipeline(
+    qdrant_url="https://your-cluster.qdrant.io",
+    qdrant_api_key="your-api-key"
+)
+
+# Custom collection settings
+rag = QdrantPipeline(
+    collection_name="my_collection",
+    vector_size=384  # Must match your embedding model
+)
+```
+
+### Embedding Models
+
+```python
+# Local Sentence Transformers (default)
+rag = QdrantPipeline(embedding_model="all-MiniLM-L6-v2")
+
+# Other popular models
+rag = QdrantPipeline(embedding_model="all-mpnet-base-v2")  # Better quality
+rag = QdrantPipeline(embedding_model="paraphrase-multilingual-MiniLM-L12-v2")  # Multilingual
+```
+
+### Language Models
+
+```python
+# OpenAI models
+rag = QdrantPipeline(llm_model="gpt-4o-mini")     # Fast and cost-effective
+rag = QdrantPipeline(llm_model="gpt-4o")          # Best quality
+rag = QdrantPipeline(llm_model="gpt-3.5-turbo")   # Legacy support
+```
+
+### Chunking Strategy
+
+```python
+rag = QdrantPipeline(
+    chunk_size=1000,    # Characters per chunk
+    chunk_overlap=200,  # Overlap between chunks
+    top_k=5            # Number of chunks to retrieve
+)
+```
+
+## Querying and Retrieval
+
+### Basic Queries
+
+```python
+# Simple query
+response = rag.query("What is machine learning?")
+
+# Query with custom parameters
+response = rag.query(
+    "Explain neural networks",
+    top_k=3,                    # Retrieve top 3 chunks
+    context_length=1500         # Limit context size
+)
+```
+
+## Pipeline Management
+
+### Getting Statistics
+
+```python
+stats = rag.get_stats()
+print(f"Embedding model: {stats['embedding_model']}")
+print(f"LLM model: {stats['llm_model']}")
+print(f"Vector DB type: {stats['vector_db_type']}")
+print(f"Chunk size: {stats['chunk_size']}")
+print(f"Documents: {stats.get('document_count', 'N/A')}")
+```
+
+### Resetting the Pipeline
+
+```python
+# Clear all documents and reset
+rag.reset()
+```
+
+## Complete Example
+
+Here's a complete working example you can run:
+
+```python
+#!/usr/bin/env python3
+"""
+Complete Qdrant Pipeline Example
+"""
+import os
+from pythonrag.pipelines import QdrantPipeline
+
+def main():
+    # Check for required API key
+    if not os.getenv("OPENAI_API_KEY"):
+        print("❌ Please set OPENAI_API_KEY environment variable")
+        return
+    
+    print("🚀 Qdrant Pipeline Demo")
+    print("=" * 40)
+    
+    try:
+        # Initialize pipeline
+        print("📊 Initializing pipeline...")
+        rag = QdrantPipeline(
+            embedding_model="all-MiniLM-L6-v2",
             llm_model="gpt-4o-mini",
-            vector_db={
-                "type": "qdrant",
-                "url": "http://localhost:6333",
-                "collection_name": "company_docs"
-            }
+            collection_name="demo_collection",
+            top_k=3
         )
-    
-    def index_documents(self, file_paths):
-        """Index company documents."""
-        for file_path in file_paths:
-            self.rag.add_document_file(file_path)
-    
-    def ask_question(self, question):
-        """Answer questions about indexed documents."""
-        return self.rag.query(question)
-```
-
-### 2. Customer Support Bot
-
-```python
-class SupportBot:
-    def __init__(self):
-        self.rag = RAGPipeline(
-            embedding_model="text-embedding-3-small",
-            llm_model="gpt-4o-mini",
-            vector_db={
-                "type": "qdrant",
-                "url": os.getenv("QDRANT_URL"),
-                "api_key": os.getenv("QDRANT_API_KEY"),
-                "collection_name": "support_kb"
+        print("✅ Pipeline initialized!")
+        
+        # Add sample documents
+        print("\n📚 Adding documents...")
+        sample_docs = [
+            {
+                "content": "Python is a high-level programming language known for its simplicity and readability. It's widely used in web development, data science, and AI.",
+                "metadata": {"topic": "programming", "language": "python"}
+            },
+            {
+                "content": "Machine learning is a subset of artificial intelligence that enables computers to learn and improve from experience without being explicitly programmed.",
+                "metadata": {"topic": "AI", "difficulty": "beginner"}
+            },
+            {
+                "content": "RAG (Retrieval-Augmented Generation) combines information retrieval with text generation to create more accurate and informative AI responses.",
+                "metadata": {"topic": "AI", "technique": "RAG"}
             }
-        )
-    
-    def handle_query(self, user_question, user_context=None):
-        """Handle customer support queries with context."""
-        # Add user context to the query if available
-        if user_context:
-            enhanced_question = f"User context: {user_context}\nQuestion: {user_question}"
-        else:
-            enhanced_question = user_question
+        ]
         
-        response = self.rag.query(enhanced_question)
-        return {
-            "answer": response,
-            "confidence": "high",  # Based on similarity scores
-            "suggested_actions": ["contact_human", "check_docs"]
-        }
+        rag.add_documents(sample_docs)
+        print(f"✅ Added {len(sample_docs)} documents!")
+        
+        # Show stats
+        print("\n📈 Pipeline Statistics:")
+        stats = rag.get_stats()
+        for key, value in stats.items():
+            print(f"  {key}: {value}")
+        
+        # Query examples
+        questions = [
+            "What is Python?",
+            "How does machine learning work?",
+            "What is RAG?"
+        ]
+        
+        print("\n🤖 Sample Queries:")
+        print("-" * 40)
+        
+        for question in questions:
+            print(f"\n❓ {question}")
+            try:
+                answer = rag.query(question)
+                print(f"💡 {answer}")
+            except Exception as e:
+                print(f"❌ Error: {e}")
+        
+        print("\n✅ Demo completed successfully!")
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+
+if __name__ == "__main__":
+    main()
 ```
 
-### 3. Code Documentation Search
+Save this as `qdrant_demo.py` and run:
+
+```bash
+export OPENAI_API_KEY="your-key-here"
+python qdrant_demo.py
+```
+
+## Error Handling
+
+The QdrantPipeline handles various error conditions gracefully:
 
 ```python
-class CodeDocSearch:
-    def __init__(self, repo_path):
-        self.rag = RAGPipeline(
-            embedding_model="text-embedding-3-small",
-            llm_model="gpt-4o-mini",
-            vector_db={
-                "type": "qdrant",
-                "collection_name": "code_docs"
-            }
-        )
-        self._index_codebase(repo_path)
-    
-    def _index_codebase(self, repo_path):
-        """Index code files and documentation."""
-        import glob
-        
-        # Index documentation files
-        doc_files = glob.glob(f"{repo_path}/**/*.md", recursive=True)
-        for doc_file in doc_files:
-            self.rag.add_document_file(doc_file)
-        
-        # Index Python docstrings
-        py_files = glob.glob(f"{repo_path}/**/*.py", recursive=True)
-        for py_file in py_files:
-            # Extract and index docstrings
-            # Implementation would parse Python files
-            pass
-    
-    def search_api(self, query):
-        """Search API documentation."""
-        return self.rag.query(f"API documentation: {query}")
+from pythonrag.exceptions import (
+    ConfigurationError,
+    VectorDatabaseError,
+    EmbeddingError
+)
+
+try:
+    rag = QdrantPipeline(
+        qdrant_url="invalid-url",
+        qdrant_api_key="invalid-key"
+    )
+except ConfigurationError as e:
+    print(f"Configuration error: {e}")
+
+try:
+    rag.add_documents(["document"])
+except VectorDatabaseError as e:
+    print(f"Vector database error: {e}")
 ```
 
-## Monitoring and Maintenance
+## Performance Tips
 
-### Collection Statistics
-
+### Batch Processing
 ```python
-def monitor_collection(rag_pipeline):
-    """Monitor Qdrant collection health."""
-    stats = rag_pipeline.get_stats()
-    
-    print(f"Documents: {stats.get('document_count', 0)}")
-    print(f"Vector DB: {stats.get('vector_db_type')}")
-    
-    # Get detailed Qdrant stats
-    if hasattr(rag_pipeline, '_vector_db'):
-        db = rag_pipeline._vector_db
-        if db.get('type') == 'qdrant':
-            client = db['client']
-            collection_name = db['collection_name']
-            
-            collection_info = client.get_collection(collection_name)
-            print(f"Points: {collection_info.points_count}")
-            print(f"Segments: {collection_info.segments_count}")
-            print(f"Index status: {collection_info.status}")
+# Process documents in batches for better performance
+large_document_list = [...]  # Many documents
+rag.add_documents(large_document_list)  # Batch processed internally
 ```
 
-### Performance Monitoring
-
+### Embedding Caching
 ```python
-import time
-
-def benchmark_search(rag_pipeline, queries, iterations=5):
-    """Benchmark search performance."""
-    total_time = 0
-    
-    for query in queries:
-        start_time = time.time()
-        
-        for _ in range(iterations):
-            result = rag_pipeline.query(query)
-        
-        query_time = (time.time() - start_time) / iterations
-        total_time += query_time
-        
-        print(f"Query: '{query[:50]}...'")
-        print(f"Average time: {query_time:.3f}s")
-    
-    avg_time = total_time / len(queries)
-    print(f"\nOverall average: {avg_time:.3f}s per query")
+# The pipeline automatically caches embeddings to avoid recomputation
+rag.add_documents(["doc1", "doc2"])  # Embeddings generated
+rag.add_documents(["doc1", "doc3"])  # doc1 embedding reused
 ```
+
+### Cost Optimization
+```python
+# Use cost-effective models
+rag = QdrantPipeline(
+    embedding_model="all-MiniLM-L6-v2",  # Free local model
+    llm_model="gpt-4o-mini",             # Most cost-effective OpenAI model
+    chunk_size=800,                      # Smaller chunks = lower costs
+    top_k=3                              # Fewer chunks = lower costs
+)
+```
+
+## Next Steps
+
+- **Try different embedding models**: Experiment with various models for your use case
+- **Customize chunking**: Adjust chunk size and overlap for your document types
+- **Add filters**: Use Qdrant's payload filtering for advanced queries
+- **Scale up**: Deploy Qdrant cluster for production workloads
+- **Monitor performance**: Track query latency and accuracy metrics
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### Connection Errors
-
-```python
-# Test Qdrant connection
-from qdrant_client import QdrantClient
-
-try:
-    client = QdrantClient("http://localhost:6333")
-    collections = client.get_collections()
-    print("✅ Qdrant connection successful")
-except Exception as e:
-    print(f"❌ Qdrant connection failed: {e}")
-    print("Solutions:")
-    print("1. Check if Qdrant is running: docker ps")
-    print("2. Verify the URL and port")
-    print("3. Check firewall settings")
+**Connection Failed**
 ```
-
-#### Collection Issues
-
-```python
-# Debug collection configuration
-def debug_collection(client, collection_name):
-    try:
-        collection = client.get_collection(collection_name)
-        config = collection.config
-        
-        print(f"Collection: {collection_name}")
-        print(f"Status: {collection.status}")
-        print(f"Points: {collection.points_count}")
-        print(f"Vector size: {config.params.vectors.size}")
-        print(f"Distance: {config.params.vectors.distance}")
-        
-    except Exception as e:
-        print(f"Collection error: {e}")
-        print("Solutions:")
-        print("1. Check collection name spelling")
-        print("2. Verify vector dimensions match embedding model")
-        print("3. Recreate collection if corrupted")
+❌ Failed to connect to Qdrant: Connection refused
 ```
+- Ensure Qdrant is running: `docker run -p 6333:6333 qdrant/qdrant`
+- Check the URL and port
 
-#### Performance Issues
-
-```python
-# Optimize search performance
-def optimize_search_performance():
-    """Tips for better search performance."""
-    print("Performance optimization checklist:")
-    print("✓ Use appropriate vector size for your model")
-    print("✓ Choose the right distance metric (usually cosine)")
-    print("✓ Tune HNSW parameters for your use case")
-    print("✓ Consider payload optimization")
-    print("✓ Monitor memory usage")
-    print("✓ Use batch operations for bulk updates")
-    print("✓ Implement proper error handling")
+**API Key Issues**
 ```
-
-## Cost Optimization
-
-### Embedding Costs
-
-```python
-# Calculate embedding costs for Qdrant + OpenAI
-def estimate_embedding_costs(num_documents, avg_doc_length):
-    """Estimate OpenAI embedding costs."""
-    # Average characters per token (rough estimate)
-    chars_per_token = 4
-    
-    # Calculate tokens
-    total_chars = num_documents * avg_doc_length
-    total_tokens = total_chars / chars_per_token
-    
-    # text-embedding-3-small pricing (as of 2024)
-    cost_per_1k_tokens = 0.00002
-    total_cost = (total_tokens / 1000) * cost_per_1k_tokens
-    
-    print(f"Estimated embedding cost:")
-    print(f"  Documents: {num_documents:,}")
-    print(f"  Total tokens: {total_tokens:,.0f}")
-    print(f"  Estimated cost: ${total_cost:.4f}")
-    
-    return total_cost
-
-# Example usage
-estimate_embedding_costs(10000, 2000)  # 10K docs, 2K chars each
+❌ OPENAI_API_KEY environment variable is required
 ```
+- Set your OpenAI API key: `export OPENAI_API_KEY="your-key"`
 
-### Storage Optimization
-
-```python
-# Optimize Qdrant storage
-storage_tips = {
-    "vector_compression": "Use quantization for large collections",
-    "payload_optimization": "Store only necessary metadata",
-    "collection_sharding": "Split large collections across nodes",
-    "backup_strategy": "Regular backups with compression",
-    "index_optimization": "Tune HNSW parameters"
-}
-
-for tip, description in storage_tips.items():
-    print(f"• {tip}: {description}")
+**Vector Size Mismatch**
 ```
+❌ Vector dimension mismatch
+```
+- Ensure `vector_size` matches your embedding model's output size
+- `all-MiniLM-L6-v2` = 384 dimensions
+- `text-embedding-3-small` = 1536 dimensions
 
-## Next Steps
-
-1. **Try the interactive example**: Run `python examples/interactive_qdrant_rag.py`
-2. **Set up production Qdrant**: Use Qdrant Cloud or deploy with Docker
-3. **Optimize for your use case**: Tune vector size, distance metrics, and HNSW parameters
-4. **Implement monitoring**: Track performance and collection health
-5. **Scale horizontally**: Use Qdrant clustering for large datasets
-
-For more advanced Qdrant features, check the [official documentation](https://qdrant.tech/documentation/). 
+For more help, check our [FAQ](../faq.md) or open an issue on GitHub. 
+ 

@@ -1,12 +1,8 @@
-#!/usr/bin/env python3
 """
-Qdrant RAG Pipeline Example
+Qdrant RAG Pipeline Implementation
 
-This example demonstrates how to extend the base RAGPipeline class
-to implement Qdrant vector database integration.
-
-Usage:
-    python examples/qdrant_pipeline_example.py
+This module contains a concrete implementation of the RAGPipeline abstract base class
+using Qdrant as the vector database backend.
 
 Requirements:
     pip install qdrant-client openai sentence-transformers
@@ -17,58 +13,49 @@ Environment Variables:
     QDRANT_API_KEY: Qdrant API key (for cloud instances)
 """
 
-import os
-import sys
 import logging
-from typing import List, Dict, Any, Optional, Union
+import os
+import uuid
+from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
-# Add the parent directory to Python path to import our package
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from src.pythonrag.core import RAGPipeline
-from src.pythonrag.exceptions import (
+from ..core import RAGPipeline
+from ..exceptions import (
     ConfigurationError,
+    DocumentProcessingError,
     EmbeddingError,
     VectorDatabaseError,
-    DocumentProcessingError,
 )
 
 try:
     from qdrant_client import QdrantClient
-    from qdrant_client.models import Distance, VectorParams, PointStruct
-    from qdrant_client.http.exceptions import ResponseHandlingException
-except ImportError:
-    print(
-        "❌ Qdrant client not installed. Please install with: pip install qdrant-client"
-    )
-    sys.exit(1)
+    from qdrant_client.models import Distance, PointStruct, VectorParams
+except ImportError as e:
+    raise ImportError(
+        "Qdrant client not installed. Please install with: pip install qdrant-client"
+    ) from e
 
 try:
     import openai
-except ImportError:
-    print("❌ OpenAI not installed. Please install with: pip install openai")
-    sys.exit(1)
+except ImportError as e:
+    raise ImportError(
+        "OpenAI not installed. Please install with: pip install openai"
+    ) from e
 
 try:
     from sentence_transformers import SentenceTransformer
-except ImportError:
-    print(
-        "❌ SentenceTransformers not installed. Please install with: pip install sentence-transformers"
-    )
-    sys.exit(1)
-
-import uuid
-import textwrap
-from datetime import datetime
+except ImportError as e:
+    raise ImportError(
+        "SentenceTransformers not installed. Please install with: pip install sentence-transformers"
+    ) from e
 
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class QdrantRAGPipeline(RAGPipeline):
+class QdrantPipeline(RAGPipeline):
     """
     Extended RAG Pipeline with Qdrant vector database implementation.
 
@@ -138,7 +125,7 @@ class QdrantRAGPipeline(RAGPipeline):
                 logger.info("Connected to local Qdrant instance")
 
         except Exception as e:
-            raise VectorDatabaseError(f"Failed to connect to Qdrant: {e}")
+            raise VectorDatabaseError(f"Failed to connect to Qdrant: {e}") from e
 
     def _init_embedding_model(self):
         """Initialize embedding model."""
@@ -146,7 +133,7 @@ class QdrantRAGPipeline(RAGPipeline):
             self._embedding_client = SentenceTransformer(self.embedding_model)
             logger.info(f"Loaded embedding model: {self.embedding_model}")
         except Exception as e:
-            raise EmbeddingError(f"Failed to load embedding model: {e}")
+            raise EmbeddingError(f"Failed to load embedding model: {e}") from e
 
     def _init_openai_client(self):
         """Initialize OpenAI client."""
@@ -158,7 +145,7 @@ class QdrantRAGPipeline(RAGPipeline):
             self._llm_client = openai.OpenAI(api_key=api_key)
             logger.info(f"Initialized OpenAI client with model: {self.llm_model}")
         except Exception as e:
-            raise ConfigurationError(f"Failed to initialize OpenAI client: {e}")
+            raise ConfigurationError(f"Failed to initialize OpenAI client: {e}") from e
 
     def _ensure_collection_exists(self):
         """Create Qdrant collection if it doesn't exist."""
@@ -178,7 +165,7 @@ class QdrantRAGPipeline(RAGPipeline):
                 logger.info(f"Using existing Qdrant collection: {self.collection_name}")
 
         except Exception as e:
-            raise VectorDatabaseError(f"Failed to create/access collection: {e}")
+            raise VectorDatabaseError(f"Failed to create/access collection: {e}") from e
 
     def _chunk_text(self, text: str) -> List[str]:
         """Split text into chunks with overlap."""
@@ -277,7 +264,7 @@ class QdrantRAGPipeline(RAGPipeline):
                     f"Successfully added {len(points)} chunks from {len(documents)} documents"
                 )
             except Exception as e:
-                raise VectorDatabaseError(f"Failed to insert documents: {e}")
+                raise VectorDatabaseError(f"Failed to insert documents: {e}") from e
 
     def query(
         self,
@@ -325,8 +312,8 @@ class QdrantRAGPipeline(RAGPipeline):
             context_text = "\n\n".join(contexts)
 
             # Generate response using OpenAI
-            system_prompt = """You are a helpful assistant that answers questions based on the provided context. 
-Use only the information from the context to answer the question. If the context doesn't contain 
+            system_prompt = """You are a helpful assistant that answers questions based on the provided context.
+Use only the information from the context to answer the question. If the context doesn't contain
 enough information to answer the question, say so clearly."""
 
             user_prompt = f"""Context:
@@ -352,7 +339,7 @@ Please provide a comprehensive answer based on the context above."""
 
         except Exception as e:
             logger.error(f"Query processing failed: {e}")
-            raise EmbeddingError(f"Failed to process query: {e}")
+            raise EmbeddingError(f"Failed to process query: {e}") from e
 
     def add_document_file(
         self, file_path: Union[str, Path], metadata: Optional[Dict[str, Any]] = None
@@ -389,14 +376,16 @@ Please provide a comprehensive answer based on the context above."""
             self.add_documents([content], [file_metadata])
 
         except Exception as e:
-            raise DocumentProcessingError(f"Failed to process file {file_path}: {e}")
+            raise DocumentProcessingError(
+                f"Failed to process file {file_path}: {e}"
+            ) from e
 
     def get_stats(self) -> Dict[str, Any]:
         """Get statistics about the RAG pipeline."""
         try:
             collection_info = self._vector_db.get_collection(self.collection_name)
             point_count = collection_info.points_count
-        except:
+        except Exception:
             point_count = 0
 
         base_stats = super().get_stats()
@@ -422,139 +411,4 @@ Please provide a comprehensive answer based on the context above."""
             self.documents_added = 0
             logger.info("Pipeline reset successfully")
         except Exception as e:
-            raise VectorDatabaseError(f"Failed to reset pipeline: {e}")
-
-
-def main():
-    """Interactive example demonstrating the Qdrant RAG Pipeline."""
-    print("🚀 Qdrant RAG Pipeline Example")
-    print("=" * 50)
-
-    # Check environment variables
-    if not os.getenv("OPENAI_API_KEY"):
-        print("❌ OPENAI_API_KEY environment variable is required")
-        print("Please set it with: export OPENAI_API_KEY='your-api-key'")
-        return
-
-    try:
-        # Initialize the pipeline
-        print("\n📊 Initializing Qdrant RAG Pipeline...")
-
-        qdrant_url = os.getenv("QDRANT_URL")
-        qdrant_api_key = os.getenv("QDRANT_API_KEY")
-
-        rag = QdrantRAGPipeline(
-            embedding_model="all-MiniLM-L6-v2",
-            llm_model="gpt-4o-mini",
-            qdrant_url=qdrant_url,
-            qdrant_api_key=qdrant_api_key,
-            collection_name="rag_demo",
-            top_k=3,
-        )
-
-        print("✅ Pipeline initialized successfully!")
-
-        # Add sample documents
-        print("\n📚 Adding sample documents...")
-
-        sample_docs = [
-            {
-                "content": """
-                Artificial Intelligence (AI) is a branch of computer science that aims to create 
-                intelligent machines that work and react like humans. AI research has been highly 
-                successful in developing effective techniques for solving a wide range of problems, 
-                from game playing to medical diagnosis. Machine learning, a subset of AI, enables 
-                computers to learn and improve from experience without being explicitly programmed.
-                """,
-                "metadata": {"source": "AI Overview", "category": "technology"},
-            },
-            {
-                "content": """
-                Large Language Models (LLMs) are a type of artificial intelligence model designed 
-                to understand and generate human-like text. These models, such as GPT-3 and GPT-4, 
-                are trained on vast amounts of text data and can perform various natural language 
-                processing tasks including text completion, summarization, translation, and 
-                question answering. They have revolutionized the field of natural language processing.
-                """,
-                "metadata": {"source": "LLM Guide", "category": "NLP"},
-            },
-            {
-                "content": """
-                Retrieval-Augmented Generation (RAG) is a technique that combines information 
-                retrieval with text generation. It works by first retrieving relevant documents 
-                from a knowledge base, then using that information to generate more accurate and 
-                informed responses. RAG helps overcome the limitations of pure language models 
-                by providing access to external knowledge and reducing hallucinations.
-                """,
-                "metadata": {
-                    "source": "RAG Explanation",
-                    "category": "AI Architecture",
-                },
-            },
-        ]
-
-        rag.add_documents(sample_docs)
-        print(f"✅ Added {len(sample_docs)} documents successfully!")
-
-        # Show pipeline stats
-        print("\n📈 Pipeline Statistics:")
-        stats = rag.get_stats()
-        for key, value in stats.items():
-            print(f"  {key}: {value}")
-
-        # Interactive query loop
-        print("\n🤖 Interactive Query Session")
-        print(
-            "Ask questions about the documents (type 'quit' to exit, 'help' for commands)"
-        )
-        print("-" * 50)
-
-        while True:
-            try:
-                question = input("\n❓ Your question: ").strip()
-
-                if question.lower() in ["quit", "exit", "q"]:
-                    break
-                elif question.lower() == "help":
-                    print("\nAvailable commands:")
-                    print("  help    - Show this help message")
-                    print("  stats   - Show pipeline statistics")
-                    print("  reset   - Reset the pipeline (clear all documents)")
-                    print("  quit    - Exit the program")
-                    continue
-                elif question.lower() == "stats":
-                    stats = rag.get_stats()
-                    print("\n📈 Current Statistics:")
-                    for key, value in stats.items():
-                        print(f"  {key}: {value}")
-                    continue
-                elif question.lower() == "reset":
-                    rag.reset()
-                    print("✅ Pipeline reset successfully!")
-                    continue
-                elif not question:
-                    continue
-
-                print("\n🔍 Searching and generating response...")
-                response = rag.query(question)
-
-                print(f"\n🤖 Response:")
-                print("-" * 30)
-                # Wrap text for better readability
-                wrapped_response = textwrap.fill(response, width=80)
-                print(wrapped_response)
-
-            except KeyboardInterrupt:
-                print("\n\n👋 Goodbye!")
-                break
-            except Exception as e:
-                print(f"\n❌ Error: {e}")
-                logger.exception("Query processing error")
-
-    except Exception as e:
-        print(f"\n❌ Pipeline initialization failed: {e}")
-        logger.exception("Initialization error")
-
-
-if __name__ == "__main__":
-    main()
+            raise VectorDatabaseError(f"Failed to reset pipeline: {e}") from e

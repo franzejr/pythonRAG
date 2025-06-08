@@ -78,6 +78,7 @@ nav:
     - Qdrant Integration: examples/qdrant.md
   - API Reference:
     - Core Classes: api/core.md
+    - Pipelines: api/pipelines.md
   - FAQ: faq.md
   - Changelog: changelog.md
 
@@ -90,3 +91,4 @@ extra:
 
 extra_css:
   - stylesheets/extra.css 
+ 

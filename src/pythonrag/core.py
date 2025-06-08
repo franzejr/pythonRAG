@@ -3,16 +3,17 @@ Core RAG pipeline implementation.
 """
 
 import logging
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
 
-class RAGPipeline:
+class RAGPipeline(ABC):
     """
-    Main RAG pipeline class that orchestrates document processing, embedding generation,
-    vector storage, and retrieval-augmented generation.
+    Main RAG pipeline abstract base class that defines the interface for document processing,
+    embedding generation, vector storage, and retrieval-augmented generation.
 
     Args:
         embedding_model: Name or path of the embedding model to use
@@ -23,7 +24,12 @@ class RAGPipeline:
         top_k: Number of top results to retrieve
 
     Example:
-        >>> rag = RAGPipeline(
+        >>> class MyRAGPipeline(RAGPipeline):
+        ...     def add_documents(self, documents, metadata=None):
+        ...         # Implementation here
+        ...         pass
+        ...     # ... implement other abstract methods
+        >>> rag = MyRAGPipeline(
         ...     embedding_model="sentence-transformers/all-MiniLM-L6-v2",
         ...     llm_model="gpt-3.5-turbo"
         ... )
@@ -57,6 +63,7 @@ class RAGPipeline:
             f"Initialized RAGPipeline with embedding_model={embedding_model}, llm_model={llm_model}"
         )
 
+    @abstractmethod
     def add_documents(
         self,
         documents: Union[List[str], List[Dict[str, Any]]],
@@ -69,16 +76,9 @@ class RAGPipeline:
             documents: List of document texts or document dictionaries
             metadata: Optional metadata for each document
         """
-        logger.info(f"Adding {len(documents)} documents to the pipeline")
+        pass
 
-        # TODO: Implement document processing and chunking
-        # TODO: Generate embeddings
-        # TODO: Store in vector database
-
-        raise NotImplementedError(
-            "Document addition will be implemented in the next iteration"
-        )
-
+    @abstractmethod
     def query(
         self,
         question: str,
@@ -96,16 +96,9 @@ class RAGPipeline:
         Returns:
             Generated response from the RAG system
         """
-        logger.info(f"Processing query: {question[:100]}...")
+        pass
 
-        # TODO: Generate embedding for the question
-        # TODO: Retrieve relevant documents from vector database
-        # TODO: Generate response using LLM with retrieved context
-
-        raise NotImplementedError(
-            "Query processing will be implemented in the next iteration"
-        )
-
+    @abstractmethod
     def add_document_file(
         self, file_path: Union[str, Path], metadata: Optional[Dict[str, Any]] = None
     ) -> None:
@@ -116,15 +109,7 @@ class RAGPipeline:
             file_path: Path to the document file
             metadata: Optional metadata for the document
         """
-        file_path = Path(file_path)
-
-        logger.info(f"Adding document from file: {file_path}")
-
-        # TODO: Implement file reading and processing
-        # TODO: Add file existence check when implemented
-        raise NotImplementedError(
-            "File document addition will be implemented in the next iteration"
-        )
+        pass
 
     def get_stats(self) -> Dict[str, Any]:
         """
@@ -143,13 +128,7 @@ class RAGPipeline:
             # TODO: Add more statistics like document count, index size, etc.
         }
 
+    @abstractmethod
     def reset(self) -> None:
         """Reset the pipeline by clearing all stored documents."""
-        logger.info("Resetting RAG pipeline")
-
-        # TODO: Clear vector database
-        # TODO: Reset any cached embeddings
-
-        raise NotImplementedError(
-            "Pipeline reset will be implemented in the next iteration"
-        )
+        pass

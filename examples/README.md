@@ -227,3 +227,4 @@ pip install "pythonrag[all]" qdrant-client openai python-dotenv
 4. **Build your own**: Use these examples as templates for your projects
 
 Happy building with PythonRAG! 🚀 
+ 
