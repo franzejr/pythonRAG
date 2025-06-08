@@ -7,7 +7,13 @@ import logging
 import sys
 
 from . import __version__
-from .core import RAGPipeline
+
+try:
+    from .pipelines import QdrantPipeline
+
+    _HAS_PIPELINES = True
+except ImportError:
+    _HAS_PIPELINES = False
 
 
 def setup_logging(verbose: bool = False) -> None:
@@ -22,8 +28,16 @@ def create_pipeline_command(args: argparse.Namespace) -> None:
     """Create and initialize a RAG pipeline."""
     print(f"Creating RAG pipeline with embedding_model={args.embedding_model}")
 
+    if not _HAS_PIPELINES:
+        print("Error: Pipeline implementations not available.")
+        print(
+            "Please install optional dependencies: pip install qdrant-client openai sentence-transformers"
+        )
+        sys.exit(1)
+
     try:
-        rag = RAGPipeline(
+        # Use QdrantPipeline as the concrete implementation
+        rag = QdrantPipeline(
             embedding_model=args.embedding_model,
             llm_model=args.llm_model,
             chunk_size=args.chunk_size,

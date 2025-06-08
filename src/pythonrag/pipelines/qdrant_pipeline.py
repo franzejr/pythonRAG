@@ -18,7 +18,7 @@ import os
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from ..core import RAGPipeline
 from ..exceptions import (
@@ -27,6 +27,12 @@ from ..exceptions import (
     EmbeddingError,
     VectorDatabaseError,
 )
+
+if TYPE_CHECKING:
+    import openai
+    from qdrant_client import QdrantClient
+    from qdrant_client.models import Distance, PointStruct, VectorParams
+    from sentence_transformers import SentenceTransformer
 
 try:
     from qdrant_client import QdrantClient
@@ -74,8 +80,8 @@ class QdrantPipeline(RAGPipeline):
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
         top_k: int = 5,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         """
         Initialize the Qdrant RAG Pipeline.
 
@@ -105,6 +111,11 @@ class QdrantPipeline(RAGPipeline):
         self.vector_size = vector_size
         self.documents_added = 0
 
+        # Initialize client attributes with proper types
+        self._vector_db: QdrantClient
+        self._embedding_client: SentenceTransformer
+        self._llm_client: openai.OpenAI
+
         # Initialize clients
         self._init_qdrant_client(qdrant_url, qdrant_api_key)
         self._init_embedding_model()
@@ -113,7 +124,7 @@ class QdrantPipeline(RAGPipeline):
         # Create collection if it doesn't exist
         self._ensure_collection_exists()
 
-    def _init_qdrant_client(self, url: Optional[str], api_key: Optional[str]):
+    def _init_qdrant_client(self, url: Optional[str], api_key: Optional[str]) -> None:
         """Initialize Qdrant client."""
         try:
             if url:
@@ -127,7 +138,7 @@ class QdrantPipeline(RAGPipeline):
         except Exception as e:
             raise VectorDatabaseError(f"Failed to connect to Qdrant: {e}") from e
 
-    def _init_embedding_model(self):
+    def _init_embedding_model(self) -> None:
         """Initialize embedding model."""
         try:
             self._embedding_client = SentenceTransformer(self.embedding_model)
@@ -135,7 +146,7 @@ class QdrantPipeline(RAGPipeline):
         except Exception as e:
             raise EmbeddingError(f"Failed to load embedding model: {e}") from e
 
-    def _init_openai_client(self):
+    def _init_openai_client(self) -> None:
         """Initialize OpenAI client."""
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
@@ -147,7 +158,7 @@ class QdrantPipeline(RAGPipeline):
         except Exception as e:
             raise ConfigurationError(f"Failed to initialize OpenAI client: {e}") from e
 
-    def _ensure_collection_exists(self):
+    def _ensure_collection_exists(self) -> None:
         """Create Qdrant collection if it doesn't exist."""
         try:
             collections = self._vector_db.get_collections().collections
@@ -219,8 +230,13 @@ class QdrantPipeline(RAGPipeline):
                 text = doc.get("content", doc.get("text", ""))
                 doc_metadata = doc.get("metadata", {})
             else:
-                text = doc
+                text = str(doc)  # Ensure text is always a string
                 doc_metadata = {}
+
+            # Ensure text is not empty
+            if not text:
+                logger.warning(f"Empty text for document {i}, skipping")
+                continue
 
             # Add provided metadata
             if metadata and i < len(metadata):
@@ -333,7 +349,7 @@ Please provide a comprehensive answer based on the context above."""
                 max_tokens=500,
             )
 
-            answer = response.choices[0].message.content
+            answer = response.choices[0].message.content or "No response generated"
             logger.info("Generated response successfully")
             return answer
 

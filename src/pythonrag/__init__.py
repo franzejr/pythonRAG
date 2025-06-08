@@ -18,7 +18,8 @@ try:
     _PIPELINES_AVAILABLE = True
 except ImportError:
     _PIPELINES_AVAILABLE = False
-    QdrantPipeline = None
+    # Use type: ignore to handle the None assignment to the class type
+    QdrantPipeline = None  # type: ignore
 
 __all__ = [
     "RAGPipeline",
