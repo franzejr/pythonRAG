@@ -2,9 +2,10 @@
 Unit tests for the core RAGPipeline functionality.
 """
 
-import pytest
-from typing import List, Dict, Any, Optional, Union
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
+
+import pytest
 
 from pythonrag import RAGPipeline
 
