@@ -167,7 +167,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
 
     - name: Comment on commit
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
           const version = '${{ steps.version.outputs.dev_version }}';
@@ -203,7 +203,7 @@ jobs:
     if: always() && github.ref == 'refs/heads/main'
     steps:
     - name: Release notification
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
           const success = '${{ needs.auto-release.result }}' === 'success';
